@@ -1,0 +1,160 @@
+package com.mococo.common.controller;
+
+import java.io.IOException;
+import java.util.Date;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.mococo.common.model.Comment;
+import com.mococo.common.service.CommentService;
+
+
+//http://localhost:8080/swagger-ui.html/
+
+@CrossOrigin(origins = { "*" }, maxAge = 6000)
+@RestController
+@RequestMapping("/comment")
+
+public class CommentController {
+	
+	private static final Logger logger = LoggerFactory.getLogger(CommentController.class);
+	private static final String SUCCESS = "success";
+	private static final String FAIL = "fail";
+	private static final String ERROR = "error";
+	
+	
+	@Autowired
+	CommentService commentService;
+	
+	@RequestMapping(value = "/{postno}", method = RequestMethod.GET)
+	private ResponseEntity<?> searchComment (@PathVariable String postno) throws IOException {
+		logger.info("게시물별 댓글 조회");
+		int post_number = Integer.parseInt(postno);
+		return new ResponseEntity<List<Comment>>(commentService.findAllByPostNumber(post_number), HttpStatus.OK);
+		
+	}
+	
+	// request param 은 댓글이 게시글의 댓글인지 댓글의 대댓글인지 구분. 게시글의 댓글: parent=0, 댓글의 대댓글: parent = 댓글의 comment_number 
+	@RequestMapping(value = "/", method = RequestMethod.POST)
+	private ResponseEntity<String> insertComment (@RequestBody Comment comment, @RequestParam("user_number") int user_number
+													, @RequestParam("parent") int parent, @RequestParam("postno") int postno) throws IOException {
+		logger.info("댓글 등록");
+		
+		Date time = new Date();
+		
+		comment.setDate(time);
+		try {
+			
+			comment.setUserNumber(user_number);
+			comment.setPostNumber(postno);
+			comment.setParent(parent);
+
+			boolean ret = commentService.insertComment(comment);
+			if(ret==false) {
+				logger.info("댓글 등록 실패");
+				return new ResponseEntity<String>(FAIL, HttpStatus.NO_CONTENT);
+			}
+			
+			
+			
+			
+			
+			return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.info("댓글 등록 오류");
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return new ResponseEntity<String>(ERROR, HttpStatus.NOT_ACCEPTABLE);
+		}
+				
+		
+
+
+	}
+	
+	@RequestMapping(value = "/{commentno}", method = RequestMethod.PUT)
+	private ResponseEntity<String> updateComment (@RequestBody Comment comment) throws IOException {
+		logger.info("댓글 수정");
+		try {
+			
+			boolean ret = commentService.updateComment(comment);
+			if(ret == false) {
+
+				logger.info("댓글 수정 실패");
+				return new ResponseEntity<String>(FAIL, HttpStatus.NO_CONTENT);
+			}
+			
+			return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			logger.info("댓글 수정 오류");
+			e.printStackTrace();
+			return new ResponseEntity<String>(ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+
+	}
+	
+	
+	
+	@RequestMapping(value = "/{comment_number}", method = RequestMethod.DELETE)
+	private ResponseEntity<String> deleteComment (@PathVariable String comment_number) throws IOException {
+		logger.info("댓글 삭제");
+		
+		try {
+			int commentno = Integer.parseInt(comment_number);
+			boolean ret = commentService.deleteComment(commentno);
+			if(ret == false) {
+				logger.info("댓글 삭제 실패");
+				return new ResponseEntity<String>(FAIL, HttpStatus.NO_CONTENT);
+			}
+			return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.info("댓글 삭제 오류");
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return new ResponseEntity<String>(ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+	}
+	
+	
+	@RequestMapping(value = "/recommend/{commentno}", method = RequestMethod.PUT)
+	private ResponseEntity<String> recommentComment (@PathVariable String commentno, @RequestParam int user_number) throws IOException {
+		
+		
+		try {
+			logger.info("댓글 추천 올리기");
+			int comment_number = Integer.parseInt(commentno);
+			boolean ret = commentService.recommendComment(comment_number,user_number);
+			if(ret == false) {
+				logger.info("댓글 추천 내리기");
+				return new ResponseEntity<String>(SUCCESS, HttpStatus.NO_CONTENT);
+			}
+			return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.info("댓글 추천 오류");
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return new ResponseEntity<String>(ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+	}
+	
+	
+	
+	
+
+}
