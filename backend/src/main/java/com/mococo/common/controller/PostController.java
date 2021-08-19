@@ -133,6 +133,7 @@ public class PostController {
 			logger.info("게시물 무한스크롤 조회");
 			List<Object> posts = postService.findInfinitePost(limit);
 			List<PostPhoto> photos = new ArrayList<>();
+			
 			for (Object p : posts) {
 				Map<String, Object> map = (Map) p;
 				Integer postno = (Integer) map.get("postNumber");
@@ -356,8 +357,12 @@ public class PostController {
 
 		try {
 			logger.info("게시글 삭제");
-			int post_number = Integer.parseInt(postno);
-			boolean ret = postService.deletePost(post_number);
+			Optional<Post> p = postService.findPostByPostNumber(Integer.parseInt(postno));
+			Post post = p.get();
+			
+			post.setDelete(true);
+			
+			boolean ret = postService.updatePost(post);
 			if (ret == false) {
 				logger.info("게시글 삭제 실패");
 				return new ResponseEntity<String>(FAIL, HttpStatus.NO_CONTENT);
