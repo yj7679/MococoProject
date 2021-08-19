@@ -3,8 +3,13 @@ package com.mococo.common.model;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -18,11 +23,15 @@ import lombok.NoArgsConstructor;
 @IdClass(PostRecommendPK.class)
 public class PostRecommend implements Serializable{
 	@Id
-	@Column(name = "post_number")
-	private int postNumber;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "postNumber")
+	@JsonIgnore
+	private Post post;
 	
 	@Id
-	@Column(name = "user_number")
-	private int userNumber;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_number")
+	@JsonIgnore
+	private User user;
 	
 }

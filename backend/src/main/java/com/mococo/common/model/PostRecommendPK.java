@@ -9,9 +9,9 @@ import lombok.NoArgsConstructor;
 // 복합키를 설정해서 생긴 테이블을 사용할 때 필요한 것
 @Data
 @AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
 public class PostRecommendPK implements Serializable{
-	private int postNumber;
-	private int userNumber;
+	private int post;
+	private int user;
 
 }

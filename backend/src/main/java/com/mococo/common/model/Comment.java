@@ -11,8 +11,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -23,6 +27,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity(name="comment")
+@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class)
 public class Comment {
 	
 	@Id
@@ -42,6 +47,9 @@ public class Comment {
 	private Date date;
 	private boolean isDelete;
 	
-	@ManyToMany(mappedBy = "comments", fetch= FetchType.LAZY)
-	private List<User> users = new ArrayList<>();
+	@OneToMany(mappedBy = "comment",fetch = FetchType.LAZY)
+	private List<CommentRecommend> commentRecommends = new ArrayList<>();
+
+
+
 }

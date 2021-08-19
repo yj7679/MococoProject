@@ -43,22 +43,12 @@ public class User {
 	private String userName;
 	
 	// 유저와 post recommend는 N:M관계
-	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(
-			name ="post_recommend",
-			joinColumns = @JoinColumn(name ="user_number"),
-			inverseJoinColumns = @JoinColumn(name = "post_number")
-			)
-	private List<Post> posts = new ArrayList<>();
+	@OneToMany(mappedBy="user",fetch = FetchType.LAZY)
+	private List<PostRecommend> postRecommends = new ArrayList<>();
 	
 	// 유저와 comment recommend는 N:M관계
-	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(
-			name ="comment_recommend",
-			joinColumns = @JoinColumn(name ="user_number"),
-			inverseJoinColumns = @JoinColumn(name = "comment_number")
-			)
-	private List<Comment> comments = new ArrayList<>();
+	@OneToMany(mappedBy="user",fetch = FetchType.LAZY)
+	private List<CommentRecommend> commentRecommends = new ArrayList<>();
 	
 	// 다대다 조인테이블 -> 유저 권한을 위해 생성
 	@ManyToMany(fetch = FetchType.LAZY)

@@ -7,6 +7,7 @@ import java.util.List;
 import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import lombok.*;
@@ -37,12 +38,15 @@ public class Post {
 	private boolean isDelete; // 게시글이 지워졌는지 여부 - 지워졌어도 db에는 존재
 	
 	
-	 @ManyToMany(mappedBy = "posts")
-	 private List<User> users = new ArrayList<>();
+	@OneToMany(mappedBy="post",fetch = FetchType.LAZY)
+	private List<PostRecommend> postRecommends = new ArrayList<>();
+	
+
 	 
 	 
-	 
+	 @JsonManagedReference
      @OneToMany(
+    	   fetch = FetchType.LAZY,
      	   mappedBy = "post",
      	   cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
      	   orphanRemoval = true

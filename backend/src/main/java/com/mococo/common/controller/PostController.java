@@ -63,21 +63,6 @@ public class PostController {
 
 			List<Post> posts = postService.findByKeywordContains(keyword);
 			
-			List<PostPhoto> photos = new ArrayList<>();
-			for (Post p : posts) {
-				Integer postno = p.getPostNumber();
-
-				List<PostPhoto> postphotos = postphotoService.findAllByPostNumber(postno);
-
-				if (postphotos.size() == 0) {
-					continue;
-				}
-				// 한장만 넣기
-				photos.add(postphotos.get(0));
-			}
-			Map<String, Object> ret = new HashMap<>();
-			ret.put("postList", posts);
-			ret.put("photosList", photos);
 			
 			if (posts == null) {
 				logger.info("해당 키워드를 가진 게시글이 없음");
@@ -85,7 +70,7 @@ public class PostController {
 			}
 
 			logger.info("키워드로 게시글 조회 성공");
-			return new ResponseEntity<>(ret, HttpStatus.OK);
+			return new ResponseEntity<>(posts, HttpStatus.OK);
 		} catch (NumberFormatException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -131,26 +116,10 @@ public class PostController {
 	public ResponseEntity<?> searchInfinitePost(@RequestParam("limit") int limit) throws IOException {
 		try {
 			logger.info("게시물 무한스크롤 조회");
-			List<Object> posts = postService.findInfinitePost(limit);
-			List<PostPhoto> photos = new ArrayList<>();
-			
-			for (Object p : posts) {
-				Map<String, Object> map = (Map) p;
-				Integer postno = (Integer) map.get("postNumber");
+			List<Post> posts = postService.findInfinitePost(limit);
 
-				List<PostPhoto> postphotos = postphotoService.findAllByPostNumber(postno);
 
-				if (postphotos.size() == 0) {
-					continue;
-				}
-				// 한장만 넣기
-				photos.add(postphotos.get(0));
-			}
-			Map<String, Object> ret = new HashMap<>();
-			ret.put("postList", posts);
-			ret.put("photosList", photos);
-
-			return new ResponseEntity<Map<String, Object>>(ret, HttpStatus.OK);
+			return new ResponseEntity<>(posts, HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.info("게시물 무한스크롤 에러");
@@ -179,25 +148,10 @@ public class PostController {
 		try {
 
 			List<Post> posts = postService.findPostType(postType);
-			List<Object> photos = new ArrayList<>();
 
-			for (Post p : posts) {
-				Integer postno = p.getPostNumber();
 
-				List<PostPhoto> postphotos = postphotoService.findAllByPostNumber(postno);
 
-				if (postphotos.size() == 0) {
-					continue;
-				}
-				// 한장만 넣기
-				photos.add(postphotos.get(0));
-			}
-
-			Map<String, Object> ret = new HashMap<>();
-			ret.put("postList", posts);
-			ret.put("photosList", photos);
-
-			return new ResponseEntity<Map<String, Object>>(ret, HttpStatus.OK);
+			return new ResponseEntity<>(posts, HttpStatus.OK);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -220,26 +174,9 @@ public class PostController {
 		try {
 			int user_number = Integer.parseInt(userno);
 			int limit_number = Integer.parseInt(limit);
-			List<Object> posts = postService.findPostUser(user_number, limit_number);
-			List<PostPhoto> photos = new ArrayList<>();
-
-			for (Object p : posts) {
-				Map<String, Object> map = (Map) p;
-				Integer postno = (Integer) map.get("postNumber");
-
-				List<PostPhoto> postphotos = postphotoService.findAllByPostNumber(postno);
-
-				if (postphotos.size() == 0) {
-					continue;
-				}
-				// 한장만 넣기
-				photos.add(postphotos.get(0));
-			}
-			Map<String, Object> ret = new HashMap<>();
-			ret.put("postList", posts);
-			ret.put("photosList", photos);
-
-			return new ResponseEntity<>(ret, HttpStatus.OK);
+			List<Post> posts = postService.findPostUser(user_number, limit_number);
+			
+			return new ResponseEntity<>(posts, HttpStatus.OK);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -260,25 +197,9 @@ public class PostController {
 		try {
 			int user_number = Integer.parseInt(userno);
 			int limit_number = Integer.parseInt(limit);
-			List<Object> posts = postService.findPostRecommend(user_number, limit_number);
-			List<PostPhoto> photos = new ArrayList<>();
-
-			for (Object p : posts) {
-				Map<String, Object> map = (Map) p;
-				Integer postno = (Integer) map.get("postNumber");
-
-				List<PostPhoto> postphotos = postphotoService.findAllByPostNumber(postno);
-
-				if (postphotos.size() == 0) {
-					continue;
-				}
-				// 한장만 넣기
-				photos.add(postphotos.get(0));
-			}
-			Map<String, Object> ret = new HashMap<>();
-			ret.put("postList", posts);
-			ret.put("photosList", photos);
-			return new ResponseEntity<>(ret, HttpStatus.OK);
+			List<Post> posts = postService.findPostRecommend(user_number, limit_number);
+	
+			return new ResponseEntity<>(posts, HttpStatus.OK);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -544,7 +465,7 @@ public class PostController {
 
 		try {
 
-			return new ResponseEntity<List<Object>>(postService.findLikePostById(user_number), HttpStatus.OK);
+			return new ResponseEntity<List<Integer>>(postService.findLikePostById(user_number), HttpStatus.OK);
 
 		} catch (Exception e) {
 			return new ResponseEntity<>(ERROR, HttpStatus.INTERNAL_SERVER_ERROR);

@@ -7,6 +7,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import lombok.*;
 
 @Data 
@@ -18,7 +21,9 @@ public class PostPhoto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int photoNumber;
-
+    
+    //읽기전용 - name 이고 쓰는 곳은 mappedBy
+    @JsonBackReference
     @ManyToOne
     @JoinColumn (name="postNumber")
     private Post post;

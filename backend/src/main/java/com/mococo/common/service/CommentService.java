@@ -123,26 +123,28 @@ public class CommentService {
 			return -1;
 		}
 		
-		boolean isRecommend= false;
-		Comment comment = ret.get();
-		List<User> users = comment.getUsers();
+//		boolean isRecommend= false;
+//		Comment comment = ret.get();
+//		List<User> users = comment.getUsers();
+//		
+//		for(User user : users) {
+//			// 이미 추천되어있으면 추천 취소
+//			if(user.getUserNumber() == userno) {
+//				isRecommend =true;
+//			}
+//
+//		}
+		Optional<CommentRecommend> cr = commentrecommendDAO.findByCommentNumberAndUserNumber(commentno, userno);
 		
-		for(User user : users) {
-			// 이미 추천되어있으면 추천 취소
-			if(user.getUserNumber() == userno) {
-				isRecommend =true;
-			}
-
-		}
 		// 이번 요청으로 추천을 누르는 경우
-		if(isRecommend == false) {
+		if(!cr.isPresent()) {
 			// 게시글 테이블의 추천수 컬럼 +1
 			ret.get().setRecommend(ret.get().getRecommend()+1);
 			commentDAO.save(ret.get());
 			
 			// COMMENT RECOMMNED 테이블에 이번에 누른 정보를 insert
-			CommentRecommend pr = new CommentRecommend(commentno,userno);
-			commentrecommendDAO.save(pr);
+			//CommentRecommend pr = new CommentRecommend(commentno,userno);
+			//commentrecommendDAO.save(pr);
 			return 1;
 		}
 		
@@ -153,7 +155,7 @@ public class CommentService {
 			commentDAO.save(ret.get());
 			
 			// POST RECOMMNED 테이블에 이번에 누른 정보를 delete
-			commentrecommendDAO.deleteByCommentNumberAndUserNumber(commentno, userno);
+			commentrecommendDAO.deleteByCommentAndUser(commentno, userno);
 			return 0;
 		}
 

@@ -20,6 +20,7 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.mococo.common.dao.PostDAO;
 import com.mococo.common.dao.PostPhotoDAO;
 import com.mococo.common.dao.PostRecommendDAO;
+import com.mococo.common.dao.UserDAO;
 import com.mococo.common.model.Post;
 import com.mococo.common.model.PostPhoto;
 import com.mococo.common.model.PostRecommend;
@@ -30,7 +31,8 @@ public class PostService {
 
 	@Autowired
 	PostDAO postDAO;
-
+	@Autowired
+	UserDAO userDAO;
 	@Autowired
 	PostRecommendDAO postrecommendDAO;
 
@@ -56,8 +58,8 @@ public class PostService {
 	}
 
 	// 무한스크롤으로 포스트를 뽑아주는 service
-	public List<Object> findInfinitePost(int limit) {
-		List<Object> posts = postDAO.findInfinitePost(PageRequest.of(limit, 3, Sort.by("date").descending()));
+	public List<Post> findInfinitePost(int limit) {
+		List<Post> posts = postDAO.findInfinitePost(PageRequest.of(limit, 3, Sort.by("date").descending()));
 		return posts;
 	}
 
@@ -67,15 +69,16 @@ public class PostService {
 	}
 
 	// 유저 별로 게시글 쓴거 불러오기
-	public List<Object> findPostUser(int no, int limit) {
-		List<Object> posts = postDAO.findAllByUserNumber(no, PageRequest.of(limit, 3, Sort.by("date").descending()));
+	public List<Post> findPostUser(int no, int limit) {
+		List<Post> posts = postDAO.findAllByUserNumber(no, PageRequest.of(limit, 3, Sort.by("date").descending()));
 		return posts;
 	}
 
 	// 유저별로 추천 누른거 불러오기
-	public List<Object> findPostRecommend(int no, int limit) {
+	public List<Post> findPostRecommend(int no, int limit) {
 
-		List<Object> posts = postDAO.findAllByUserRecommend(no, PageRequest.of(limit, 3, Sort.by("date").descending()));
+		List<Integer> postnums = postrecommendDAO.findLikePostById(no);
+		List<Post> posts = postDAO.findByPostNumberIn(postnums, PageRequest.of(limit, 3, Sort.by("date").descending()));
 		return posts;
 	}
 
@@ -114,32 +117,34 @@ public class PostService {
 	}
 
 	public int recommendPost(int postno, int userno) {
-		Optional<Post> ret = postDAO.findPostByPostNumber(postno);
-
+		Optional<Post> post = postDAO.findPostByPostNumber(postno);
+		Optional<User> user = userDAO.findById(userno);
 		// 추천할 post가 없는 경우 - 잘못된 접근
-		if (!ret.isPresent()) {
+		if (!post.isPresent()) {
 			return -1;
 		}
 
-		boolean isRecommend = false;
-		Post post = ret.get();
-		List<User> users = post.getUsers();
+//		boolean isRecommend = false;
+//		Post post = ret.get();
+//		List<User> users = post.get();
+//		
+//		for (User user : users) {
+//			// 이미 추천되어있으면 추천 취소
+//			if (user.getUserNumber() == userno) {
+//				isRecommend = true;
+//			}
+//
+//		}
 		
-		for (User user : users) {
-			// 이미 추천되어있으면 추천 취소
-			if (user.getUserNumber() == userno) {
-				isRecommend = true;
-			}
-
-		}
+		Optional<PostRecommend> postRecommend = postrecommendDAO.findByPostAndUser(post.get(),user.get());
 		// 이번 요청으로 추천을 누르는 경우
-		if (isRecommend == false) {
+		if (!postRecommend.isPresent()) {
 			// 게시글 테이블의 추천수 컬럼 +1
-			ret.get().setRecommend(ret.get().getRecommend() + 1);
-			postDAO.save(ret.get());
+			post.get().setRecommend(post.get().getRecommend() + 1);
+			postDAO.save(post.get());
 
-			// POST RECOMMNED 테이블에 이번에 누른 정보를 insert
-			PostRecommend pr = new PostRecommend(postno, userno);
+			//POST RECOMMNED 테이블에 이번에 누른 정보를 insert
+			PostRecommend pr = new PostRecommend(post.get(), user.get());
 			postrecommendDAO.save(pr);
 			return 1;
 		}
@@ -147,11 +152,11 @@ public class PostService {
 		// 이번 요청으로 추천을 취소 하는 경우
 		else {
 			// 게시글 테이블의 추천수 컬럼 -1
-			ret.get().setRecommend(ret.get().getRecommend() - 1);
-			postDAO.save(ret.get());
+			post.get().setRecommend(post.get().getRecommend() - 1);
+			postDAO.save(post.get());
 
 			// POST RECOMMNED 테이블에 이번에 누른 정보를 delete
-			postrecommendDAO.deleteByPostNumberAndUserNumber(postno, userno);
+			postrecommendDAO.deleteByPostAndUser(post.get(), user.get());
 			return 0;
 		}
 
@@ -272,8 +277,8 @@ public class PostService {
 		return file;
 	}
 
-	public List<Object> findLikePostById(int user_number) {
-		List<Object> ret = postrecommendDAO.findLikePostById(user_number);
+	public List<Integer> findLikePostById(int user_number) {
+		List<Integer> ret = postrecommendDAO.findLikePostById(user_number);
 
 		return ret;
 	}

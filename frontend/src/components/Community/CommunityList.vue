@@ -153,8 +153,9 @@ export default {
         .get(`post/type/${text}`)
         .then(({ data }) => {
           this.list = null;
-          this.list = data.postList;
-          this.photolist = null;
+          this.list = data;
+          console.log("여기데이터");
+          console.log(data);
           this.photolist = [];
           this.list.forEach((l, index) => {
             if(!isNaN(l)) {
@@ -191,7 +192,7 @@ export default {
           // console.log(response.data.postList);
           // console.log(response.data.photosList);
           setTimeout(() => {
-            if (response.data.postList.length) {
+            if (response.data.length) {
               this.list = this.list.concat(response.data.postList);
               this.list.forEach((l, index) => {
                 if (!this.photolist[index]) {

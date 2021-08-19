@@ -4,8 +4,13 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -19,10 +24,14 @@ import lombok.NoArgsConstructor;
 @IdClass(CommentRecommendPK.class)
 public class CommentRecommend implements Serializable{
 	@Id
-	@Column(name = "comment_number")
-	private int commentNumber;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "comment_number")
+	@JsonIgnore
+	private Comment comment;
 	
 	@Id
-	@Column(name = "user_number")
-	private int userNumber;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_number")
+	@JsonIgnore
+	private User user;
 }

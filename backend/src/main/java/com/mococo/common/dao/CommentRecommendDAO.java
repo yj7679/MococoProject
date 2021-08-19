@@ -1,6 +1,7 @@
 package com.mococo.common.dao;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.transaction.Transactional;
 
@@ -16,7 +17,7 @@ public interface CommentRecommendDAO extends JpaRepository<CommentRecommend,Comm
 	
 	// transactional 추가안하면 오류떠서 추가했음.
 	@Transactional
-	void deleteByCommentNumberAndUserNumber(int commentno, int userno);
+	void deleteByCommentAndUser(int commentno, int userno);
 	
 	// 게시글 안에 댓글 중 특정 유저가 좋아요 누른 댓글 번호 리스트
 	@Query(value="SELECT cr.comment_number as commentNumber "
@@ -28,4 +29,8 @@ public interface CommentRecommendDAO extends JpaRepository<CommentRecommend,Comm
 			+ "WHERE p.post_number = :postno and cr.user_number = :userno ", nativeQuery = true)
 	public List<Object> findAllByUserNumber(int postno, int userno);
 
+	@Query(value="SELECT cr.comment_number as commentNumber, cr.user_number as userNumber "
+			+ "FROM comment_recommend cr "
+			+ "WHERE cr.comment_number = :commentno and cr.user_number = :userno ", nativeQuery = true)
+	public Optional<CommentRecommend> findByCommentNumberAndUserNumber(int commentno, int userno);
 }
