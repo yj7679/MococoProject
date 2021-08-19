@@ -111,23 +111,16 @@ export default {
       // console.log(this.cropInThisMonth);
     });
     axios.get("post/top?size=10").then((data)=> {
-      this.posts = data.data.postList;
-      let photosList = data.data.photosList;
-      // console.log(photosList);
-      this.posts.forEach((p, index) => {
-        if(!this.photos[index]) {
-          this.photos[index] = null;
-          this.flags[index] = false;
-          if(photosList.length) {
-            for (let i = 0; i < photosList.length; i++) {
-              if(p.postNumber==photosList[i].post.postNumber) {
-                this.photos[index] = "https://mococobucket.s3.ap-northeast-2.amazonaws.com/post/" + photosList[i].saveFile;
-                this.flags[index] = true;
-              }
-            }
-          }
-        }
-      });
+      this.posts = data.data;
+      // //let photosList = data.data.photosList;
+      // console.log(data);
+      // this.posts.forEach((p, index) => {
+      //    for(let i =0; i<p.photos.length;i++){
+      //      this.photos[index] = "https://mococobucket.s3.ap-northeast-2.amazonaws.com/post/" + p.photos[i].saveFile;
+                
+      //    }
+    
+      // });
     });
   },
   methods: {

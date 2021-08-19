@@ -40,11 +40,11 @@ public interface PostDAO extends JpaRepository<Post, Integer>{
 	public List<Post> findAllByUserRecommend(int no,Pageable pageable);
 	public Post save(Post post);
 	
-	@Query(value = "SELECT new Map(p.postNumber as postNumber, p.userNickname as userNickname, p.userNumber as userNumber, p.postType as postType, p.title as title, p.recommend as recommend,p.commentCount as commentCount, p.view as view, p.date as date, p.content as content, p.keyword as keyword, p.isDelete as isDelete, p.isFinish as isFinish) "
+	@Query(value = "SELECT p "
 			+ "FROM post AS p "
 			+ "WHERE isDelete = 0 "
 			+ "ORDER BY p.recommend DESC ")
-	public List<Object> findTopPost(Pageable pageable);
+	public List<Post> findTopPost(Pageable pageable);
 	
 
 	public List<Post> findByKeywordContains(String keyword);

@@ -433,25 +433,9 @@ public class PostController {
 		logger.info("인기 게시글 리스트 반환");
 
 		try {
-			List<Object> postList = postService.findTopPost(size);
-			List<PostPhoto> photos = new ArrayList<>();
-			for (Object p : postList) {
-				Map<String, Object> map = (Map) p;
-				Integer postno = (Integer) map.get("postNumber");
+			List<Post> posts = postService.findTopPost(size);
 
-				List<PostPhoto> postphotos = postphotoService.findAllByPostNumber(postno);
-
-				if (postphotos.size() == 0) {
-					continue;
-				}
-				// 한장만 넣기
-				photos.add(postphotos.get(0));
-			}
-			Map<String, Object> ret = new HashMap<>();
-			ret.put("postList", postList);
-			ret.put("photosList", photos);
-
-			return new ResponseEntity<>(ret, HttpStatus.OK);
+			return new ResponseEntity<>(posts, HttpStatus.OK);
 
 		} catch (Exception e) {
 			return new ResponseEntity<>(ERROR, HttpStatus.INTERNAL_SERVER_ERROR);

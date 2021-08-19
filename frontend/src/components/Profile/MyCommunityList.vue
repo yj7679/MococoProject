@@ -143,8 +143,9 @@ export default {
       axios
         .get(`post/type/${text}`)
         .then(res => {
+          console.log(res);
           let userNumber = this.$props.userNumber
-          var chooseList = res.data.postList;
+          var chooseList = res.data;
           var i = 0
           this.list = null;
           this.list = [];
@@ -188,21 +189,21 @@ export default {
           // console.log(response.data.postList);
           // console.log(response.data.photosList);
           setTimeout(() => {
-            if (response.data.postList.length) {
-              this.list = this.list.concat(response.data.postList);
+            console.log(response);
+            if (response.data.length ) {
+
+              this.list = this.list.concat(response.data);
               this.list.forEach((l, index) => {
-                if (!this.photolist[index]) {
+                if (l.photos.length!=0) {
+                 
                   this.photolist[index] = null;
-                  if (response.data.photosList.length) {
-                    for (let i = 0; i < response.data.photosList.length; i++) {
-                      if (
-                        l.postNumber ==
-                        response.data.photosList[i].post.postNumber
-                      ) {
+                  if (response.data.length) {
+                    for (let i = 0; i < l.photos.length; i++) {
+                     
                         this.photolist[index] =
                           "https://mococobucket.s3.ap-northeast-2.amazonaws.com/post/" +
-                          response.data.photosList[i].saveFile;
-                      }
+                          l.photos[i].saveFile;
+                      
                     }
                   }
                 }

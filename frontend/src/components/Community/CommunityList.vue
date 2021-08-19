@@ -154,8 +154,6 @@ export default {
         .then(({ data }) => {
           this.list = null;
           this.list = data;
-          console.log("여기데이터");
-          console.log(data);
           this.photolist = [];
           this.list.forEach((l, index) => {
             if(!isNaN(l)) {
@@ -192,21 +190,20 @@ export default {
           // console.log(response.data.postList);
           console.log(response.data.photosList);
           setTimeout(() => {
+            console.log(response);
             if (response.data.length) {
-              this.list = this.list.concat(response.data.postList);
+              this.list = this.list.concat(response.data);
               this.list.forEach((l, index) => {
-                if (!this.photolist[index]) {
+                if (l.photos.length!=0) {
+                  
                   this.photolist[index] = null;
-                  if (response.data.photosList.length) {
-                    for (let i = 0; i < response.data.photosList.length; i++) {
-                      if (
-                        l.postNumber ==
-                        response.data.photosList[i].post.postNumber
-                      ) {
+                  if (response.data.length) {
+                    for (let i = 0; i < l.photos.length; i++) {
+                     
                         this.photolist[index] =
                           "https://mococobucket.s3.ap-northeast-2.amazonaws.com/post/" +
-                          response.data.photosList[i].saveFile;
-                      }
+                          l.photos[i].saveFile;
+                      
                     }
                   }
                 }

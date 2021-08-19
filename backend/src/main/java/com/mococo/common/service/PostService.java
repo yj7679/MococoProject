@@ -260,7 +260,7 @@ public class PostService {
 		return p;
 	}
 
-	public List<Object> findTopPost(int size) {
+	public List<Post> findTopPost(int size) {
 		return postDAO.findTopPost(PageRequest.of(0, size));
 	}
 
