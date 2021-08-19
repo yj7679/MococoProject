@@ -190,7 +190,7 @@ export default {
         })
         .then((response) => {
           // console.log(response.data.postList);
-          // console.log(response.data.photosList);
+          console.log(response.data.photosList);
           setTimeout(() => {
             if (response.data.length) {
               this.list = this.list.concat(response.data.postList);
