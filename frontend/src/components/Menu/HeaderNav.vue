@@ -58,9 +58,10 @@ export default {
         .get(`user/${this.$store.state.userNumber}`)
         .then((res) => {
           this.myProfileNumber = res.data.userNumber;
-          // console.log(res);
-          if(res.data.profilePhoto) {
-            this.profilePhoto = "https://mococobucket.s3.ap-northeast-2.amazonaws.com/profile/" + res.data.profilePhoto.saveFile;
+          // console.log(res.data);
+          if(res.data.photoName) {
+            this.profilePhoto = "https://mococobucket.s3.ap-northeast-2.amazonaws.com/profile/" + res.data.photoName;
+            // console.log(this.profilePhoto);
           }
         })
         .catch((err) => {
@@ -114,8 +115,8 @@ export default {
     padding: 5px;
   }
   .box {
-    width: 60px;
-    height: 60px;
+    width: 50px;
+    height: 50px;
     border: 1px solid #a9a9a9;
     border-radius: 70%;
     overflow: hidden;
