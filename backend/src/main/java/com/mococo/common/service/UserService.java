@@ -282,7 +282,7 @@ public class UserService {
 
 	public Optional<User> insertProfilePhoto(int userNumber, MultipartFile mfile) {
 		Optional<User> user = userDAO.findById(userNumber);
-
+		
 		if (mfile == null) {
 			// TODO : 파일이 없을 땐 어떻게 해야할까.. 고민을 해보아야 할 것
 			System.out.println("텅비었어....");
@@ -305,11 +305,15 @@ public class UserService {
 				amazonS3.putObject(new PutObjectRequest(s3bucket, "profile/" + destinationFileName, file)
 						.withCannedAcl(CannedAccessControlList.PublicRead));
 
-				photo.setUser(user.get());
+				photo.setUserNumber(user.get().getUserNumber());
 				photo.setOriginFile(originalFileName);
 				photo.setSaveFile(destinationFileName);
 				photo.setSaveFolder("profile");
-				profilephotoDAO.save(photo);
+				
+				photo = profilephotoDAO.save(photo);
+				
+				user.get().setPhotoName(destinationFileName);
+				userDAO.save(user.get());
 				file.delete();
 			}
 
@@ -351,9 +355,10 @@ public class UserService {
 				amazonS3.putObject(new PutObjectRequest(s3bucket, "profile/" + destinationFileName, file)
 						.withCannedAcl(CannedAccessControlList.PublicRead));
 
-				photo.setUser(user.get());
+				photo.setUserNumber(user.get().getUserNumber());
 				photo.setOriginFile(originalFileName);
 				photo.setSaveFile(destinationFileName);
+				user.get().setPhotoName(destinationFileName);
 				photo.setSaveFolder("profile");
 				profilephotoDAO.save(photo);
 				file.delete();
@@ -415,6 +420,16 @@ public class UserService {
 	public int updateWithdraw(int userNumber) {
 		return userDAO.updateWithdraw(userNumber);
 	}
+
+	public Optional<ProfilePhoto> findProfilePhotoByUserNumber(int userNumber) {
+		
+		
+		return profilephotoDAO.findByUserNumber(userNumber);
+	}
+
+
+
+
 
 	
 	/*

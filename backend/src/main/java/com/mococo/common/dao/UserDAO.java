@@ -22,7 +22,7 @@ public interface UserDAO extends JpaRepository<User, Integer> {
 
 	public List<User> findByPassword(String password);
 
-	// 디폴트 호출을 하면 쓸데없이 post랑 comment등을 호출해서  query로 그것을 막음
+	
 	@Query("SELECT u FROM user u WHERE userNumber = :userNumber")
 	public Optional<User> findByUserNumber(Integer userNumber);
 

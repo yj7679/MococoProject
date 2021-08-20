@@ -13,4 +13,7 @@ public interface ProfilePhotoDAO extends JpaRepository<ProfilePhoto, Integer>{
 	@Query(value = "SELECT pp.* FROM profile_photo pp WHERE user_number = :no", nativeQuery =true)
 	Optional<ProfilePhoto> findByUserNumber(int no);
 
+
+	Optional<ProfilePhoto> findProfilePhotoByUserNumber(int userNumber);
+
 }

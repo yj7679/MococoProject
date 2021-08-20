@@ -307,7 +307,7 @@ export default {
     //   } else {
         axios.get(`user/${this.$route.params.usernumber}`)
         .then((res) => {
-          // console.log(res.data);
+          console.log(res.data);
           this.userProfile = res.data;
         })
         .catch(err => {

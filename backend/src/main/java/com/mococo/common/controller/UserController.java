@@ -143,7 +143,6 @@ public class UserController {
 
 		try {
 			Optional<User> user = userService.getMyUserWithAuthorities();
-
 			if (!user.isPresent()) {
 				logger.info("회원정보 없음");
 				return new ResponseEntity<User>(HttpStatus.NO_CONTENT);
@@ -463,10 +462,10 @@ public class UserController {
 
 		try {
 			Optional<User> user = userService.findByUserNumber(userNumber);
-			ProfilePhoto profilePhoto = user.get().getProfilePhoto();
-			if(profilePhoto!=null) {
-				user.get().setProfilePhoto(profilePhoto);
-			}
+//			Optional<ProfilePhoto> pp = userService.findProfilePhotoByUserNumber(userNumber);
+//			if(pp!=null) {
+//				user.get().setProfilePhoto(profilePhoto);
+//			}
 			
 			return new ResponseEntity<User>(user.get(), HttpStatus.OK);
 		} catch (Exception e) {
