@@ -580,12 +580,12 @@ public class UserController {
 	@ApiOperation(value = "프로필 사진 수정", notes = "유저번호를 받아 수정잘되었는지 success 리턴.", response = User.class)
 	@ApiImplicitParams({ @ApiImplicitParam(name = "userNumber", value = "수정하고싶은 userNumber", required = true) })
 	public ResponseEntity<?> updateProfilePhoto(@RequestParam(value = "userNumber") int userNumber,
-			@RequestParam(value = "photoNumber") int photoNumber,
+			@RequestParam(value = "photoNumber") String photoName,
 			@RequestParam(value = "image", required = false) MultipartFile file) throws IOException {
 		logger.info("프로필 사진 수정");
 
 		try {
-			Optional<User> user = userService.updateProfilePhoto(userNumber, photoNumber, file);
+			Optional<User> user = userService.updateProfilePhoto(userNumber, photoName, file);
 
 			if (user.isPresent()) {
 				return new ResponseEntity<>(user, HttpStatus.OK);
@@ -602,11 +602,11 @@ public class UserController {
 	@ApiOperation(value = "프로필 사진 삭제", notes = "유저번호를 받아 삭제잘되었는지 success 리턴.", response = User.class)
 	@ApiImplicitParams({ @ApiImplicitParam(name = "userNumber", value = "삭제하고싶은 userNumber", required = true) })
 	public ResponseEntity<?> deleteProfilePhoto(@RequestParam(value = "userNumber") int userNumber,
-			@RequestParam(value = "photoNumber") int photoNumber) throws IOException {
+			@RequestParam(value = "photoNumber") String photoName) throws IOException {
 		logger.info("프로필 사진 삭제");
 
 		try {
-			boolean ret = userService.deleteProfilePhoto(userNumber, photoNumber);
+			boolean ret = userService.deleteProfilePhoto(userNumber, photoName);
 
 			if (ret == true) {
 				return new ResponseEntity<>(SUCCESS, HttpStatus.OK);

@@ -16,4 +16,11 @@ public interface ProfilePhotoDAO extends JpaRepository<ProfilePhoto, Integer>{
 
 	Optional<ProfilePhoto> findProfilePhotoByUserNumber(int userNumber);
 
+
+	Optional<ProfilePhoto> findBySaveFile(String recentPhotoNum);
+
+
+	void deleteBySaveFile(String recentPhotoNum);
+
+
 }

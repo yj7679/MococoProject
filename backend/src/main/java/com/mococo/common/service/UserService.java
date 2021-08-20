@@ -321,17 +321,17 @@ public class UserService {
 		return user;
 	}
 
-	public Optional<User> updateProfilePhoto(int userNumber, int recentPhotoNum, MultipartFile mfile) {
+	public Optional<User> updateProfilePhoto(int userNumber,  String photoName, MultipartFile mfile) {
 		Optional<User> user = userDAO.findById(userNumber);
 
-		Optional<ProfilePhoto> recentphoto = profilephotoDAO.findById(recentPhotoNum);
+		Optional<ProfilePhoto> recentphoto = profilephotoDAO.findBySaveFile(photoName);
 
 		// 기존에 것을 지워야한다.
 
 		// Bucket에서 삭제한다.
 		amazonS3.deleteObject(s3bucket, recentphoto.get().getSaveFolder() + "/" + recentphoto.get().getSaveFile());
 
-		profilephotoDAO.deleteById(recentPhotoNum);
+		profilephotoDAO.deleteBySaveFile(photoName);
 
 		if (mfile == null) {
 			// TODO : 파일이 없을 땐 어떻게 해야할까.. 고민을 해보아야 할 것
@@ -368,16 +368,16 @@ public class UserService {
 		return user;
 	}
 
-	public boolean deleteProfilePhoto(int userNumber, int recentPhotoNum) {
+	public boolean deleteProfilePhoto(int userNumber, String recentPhotoNum) {
 		try {
-			Optional<ProfilePhoto> recentphoto = profilephotoDAO.findById(recentPhotoNum);
+			Optional<ProfilePhoto> recentphoto = profilephotoDAO.findBySaveFile(recentPhotoNum);
 
 			// 기존에 것을 지워야한다.
 
 			// Bucket에서 삭제한다.
 			amazonS3.deleteObject(s3bucket, recentphoto.get().getSaveFolder() + "/" + recentphoto.get().getSaveFile());
 
-			profilephotoDAO.deleteById(recentPhotoNum);
+			profilephotoDAO.deleteBySaveFile(recentPhotoNum);
 			return true;
 		} catch (AmazonServiceException e) {
 			// TODO Auto-generated catch block
@@ -426,6 +426,8 @@ public class UserService {
 		
 		return profilephotoDAO.findByUserNumber(userNumber);
 	}
+
+
 
 
 
