@@ -192,12 +192,12 @@ export default {
 
     },
     deletePhoto() {
-      var targetPhotoNum = this.userProfile.profilePhoto.photoNumber
-      axios.delete(`user/photo/delete?photoNumber=${targetPhotoNum}&userNumber=${this.userNum}`)
+      var targetPhotoName = this.userProfile.photoName
+      axios.delete(`user/photo/delete?photoName=${targetPhotoName}`)
       .then((res) => {
         if(res.status==200) {
           this.$store.dispatch('getProfile', this.$route.params.usernumber);
-          this.userProfile.profilePhoto = null;
+          this.userProfile.photoName = null;
         }
       })
       .catch(err => {
@@ -206,11 +206,11 @@ export default {
     },
     fileSlc() {
       let inputFiles = this.$refs.files.files;
-      if (this.$store.state.profile.profilePhoto) {
+      if (this.$store.state.profile.photoName) {
         const formData = new FormData();
-        var targetPhotoNum = this.$store.state.profile.profilePhoto.photoNumber
+        var targetPhotoName = this.$store.state.profile.photoName
         formData.append("image", inputFiles[0]);
-        axios.put(`user/photo/update?photoNumber=${targetPhotoNum}&userNumber=${this.userNum}`, formData, {
+        axios.put(`user/photo/update?photoName=${targetPhotoName}&userNumber=${this.userNum}`, formData, {
           headers: { "Content-Type": "multipart/form-data" },
         })
         .then(res => {
@@ -284,8 +284,8 @@ export default {
       return this.userProfile.userNumber
     },
     getProfilePhoto() {
-      if (this.userProfile.profilePhoto) {
-         var ProfileUrl = "https://mococobucket.s3.ap-northeast-2.amazonaws.com/profile/" + this.userProfile.profilePhoto.saveFile
+      if (this.userProfile.photoName) {
+         var ProfileUrl = "https://mococobucket.s3.ap-northeast-2.amazonaws.com/profile/" + this.userProfile.photoName
         return ProfileUrl
       }
       else {
@@ -307,7 +307,7 @@ export default {
     //   } else {
         axios.get(`user/${this.$route.params.usernumber}`)
         .then((res) => {
-          console.log(res.data);
+          // console.log(res.data);
           this.userProfile = res.data;
         })
         .catch(err => {
